@@ -5,11 +5,24 @@ from scripts.timer import Timer
 
 class StatusManagerTest(unittest.TestCase):
 
-    def test_shouldReturnTimer(self):
+    def test_shouldReturnTotalTimeGreaterThanZeroWhenStartingAndStoppingTimer(self):
 
         timer = Timer()
         timer.start()
 
         timer.stop()
 
-        print(timer.get_time())
+        self.assertTrue(timer.get_time() > 0)
+
+    def test_shouldReturnTotalTimeGreaterThanZeroWhenStartingTimer(self):
+
+        timer = Timer()
+        timer.start()
+
+        self.assertTrue(timer.get_time() > 0)
+
+    def test_shouldReturnTotalTimeZeroWhenGettingTotalTimeWithoutStartingTimer(self):
+
+        timer = Timer()
+
+        self.assertEqual(timer.get_time(), 0.0)

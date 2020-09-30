@@ -8,7 +8,7 @@ class StatusManagerTest(unittest.TestCase):
 
     def test_shouldReturnEmptyListGivenNoDelayedTrainsInTrainStatus(self):
         delayed_trains = set()
-        train_delay_times = get_mta_line_delay_times_dict()
+        train_delay_times = get_test_mta_line_delay_times_dict()
 
         status = """"Trains Rerouted
                         D
@@ -48,7 +48,7 @@ class StatusManagerTest(unittest.TestCase):
 
     def test_shouldReturnListOfDelayedTrainsGivenDelayedTrainsInTrainStatus(self):
         delayed_trains = set()
-        train_delay_times = get_mta_line_delay_times_dict()
+        train_delay_times = get_test_mta_line_delay_times_dict()
 
         status = """"Trains Rerouted
                         D
@@ -89,7 +89,7 @@ class StatusManagerTest(unittest.TestCase):
 
     def test_shouldPrintLineRecoveredWhenTrainWasDelayedButNowIsnt(self):
         delayed_trains = {'A', 'B', 'C', 'F'}
-        train_delay_times = get_mta_line_delay_times_dict()
+        train_delay_times = get_test_mta_line_delay_times_dict()
         train_delay_times['F'].start()
 
         status = """"Trains Rerouted
@@ -129,7 +129,7 @@ class StatusManagerTest(unittest.TestCase):
         self.assertEqual(new_delayed_trains, {'A', 'B', 'C'})
 
 
-def get_mta_line_delay_times_dict():
+def get_test_mta_line_delay_times_dict():
     return {'R': Timer(),
             'D': Timer(),
             'E': Timer(),
