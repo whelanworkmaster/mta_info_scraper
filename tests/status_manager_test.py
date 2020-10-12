@@ -1,16 +1,14 @@
 import unittest
 
-from scripts.status_manager import parse_statuses
+from scripts.status_manager import parse_statuses_and_update_times, parse_statuses, \
+    get_new_delayed_trains_and_update_times
 from scripts.timer import Timer
 
 
 class StatusManagerTest(unittest.TestCase):
 
-    def test_shouldReturnEmptyListGivenNoDelayedTrainsInTrainStatus(self):
-        delayed_trains = set()
-        train_delay_times = get_test_mta_line_delay_times_dict()
-
-        status = """"Trains Rerouted
+    def test_shouldParseStatusesIntDict(self):
+        status = """Trains Rerouted
                         D
                         N
                         Planned Work
@@ -21,28 +19,22 @@ class StatusManagerTest(unittest.TestCase):
                         Weekday Service
                         1
                         3
-                        4
-                        6
-                        7
-                        A
-                        B
-                        C
-                        F
-                        S
-                        G
-                        S
-                        S
-                        J
-                        L
-                        M
-                        Q
-                        R
-                        W
-                        Z
-                        Trains Rerouted
-                        D
-                        N"""
-        new_delayed_trains = parse_statuses(status, delayed_trains, train_delay_times)
+                        4"""
+
+        statuses_dict = {'Trains Rerouted': ['D', 'N'], 'Planned Work': ['2', '5', 'E', 'SIR'],
+                         'Weekday Service': ['1', '3', '4']}
+
+        parsed_statuses_dict = parse_statuses(status)
+
+        self.assertDictEqual(statuses_dict, parsed_statuses_dict)
+
+    def test_shouldReturnEmptyListGivenNoDelayedTrainsInTrainStatus(self):
+        delayed_trains = set()
+        train_delay_times = get_test_mta_line_delay_times_dict()
+
+        statuses_dict = {'Trains Rerouted': ['D', 'N'], 'Planned Work': ['2', '5', 'E', 'SIR'],
+                         'Weekday Service': ['1', '3', '4']}
+        new_delayed_trains = get_new_delayed_trains_and_update_times(statuses_dict, delayed_trains, train_delay_times)
 
         self.assertTrue(not new_delayed_trains)
 
@@ -50,40 +42,9 @@ class StatusManagerTest(unittest.TestCase):
         delayed_trains = set()
         train_delay_times = get_test_mta_line_delay_times_dict()
 
-        status = """"Trains Rerouted
-                        D
-                        N
-                        Planned Work
-                        2
-                        5
-                        E
-                        SIR
-                        Delays
-                        A
-                        B
-                        C
-                        F
-                        Weekday Service
-                        1
-                        3
-                        4
-                        6
-                        7
-                        S
-                        G
-                        S
-                        S
-                        J
-                        L
-                        M
-                        Q
-                        R
-                        W
-                        Z
-                        Trains Rerouted
-                        D
-                        N"""
-        new_delayed_trains = parse_statuses(status, delayed_trains, train_delay_times)
+        statuses_dict = {'Trains Rerouted': ['D', 'N'], 'Planned Work': ['2', '5', 'E', 'SIR'],
+                         'Delayed': ['A', 'B', 'C', 'F']}
+        new_delayed_trains = get_new_delayed_trains_and_update_times(statuses_dict, delayed_trains, train_delay_times)
 
         self.assertEqual(new_delayed_trains, {'A', 'B', 'C', 'F'})
 
@@ -92,39 +53,9 @@ class StatusManagerTest(unittest.TestCase):
         train_delay_times = get_test_mta_line_delay_times_dict()
         train_delay_times['F'].start()
 
-        status = """"Trains Rerouted
-                        D
-                        N
-                        Planned Work
-                        2
-                        5
-                        E
-                        SIR
-                        Delays
-                        A
-                        B
-                        C
-                        Weekday Service
-                        1
-                        3
-                        4
-                        6
-                        7
-                        S
-                        G
-                        S
-                        S
-                        J
-                        L
-                        M
-                        Q
-                        R
-                        W
-                        Z
-                        Trains Rerouted
-                        D
-                        N"""
-        new_delayed_trains = parse_statuses(status, delayed_trains, train_delay_times)
+        statuses_dict = {'Trains Rerouted': ['D', 'N'], 'Planned Work': ['2', '5', 'E', 'SIR'],
+                         'Delayed': ['A', 'B', 'C']}
+        new_delayed_trains = get_new_delayed_trains_and_update_times(statuses_dict, delayed_trains, train_delay_times)
 
         self.assertEqual(new_delayed_trains, {'A', 'B', 'C'})
 
